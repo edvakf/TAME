@@ -1,14 +1,58 @@
 # About this repo
 
-This repo is for a reproduction project of the paper "Identifying Sepsis Subphenotypes via Time-Aware Multi-Modal Auto-Encoder".
+This repo is for a reproducibility experiment of the paper "Identifying Sepsis Subphenotypes via Time-Aware Multi-Modal Auto-Encoder".
 
-For details, please see the original repo.
+> **Identifying Sepsis Subphenotypes via Time-Aware Multi-Modal Auto-Encoder (KDD2020)**<br>
+> Changchang yin, Ruoqi Liu, Dongdong Zhang, Ping Zhang<br>
+> [paper](https://web.cse.ohio-state.edu/~zhang.10631/files/KDD2020_TAME.pdf)
 
-## Results of TAME
+For details, please see the original repo. 
+https://github.com/AIMedLab/TAME
+
+
+
+# Instruction
+
+## Build pivoted_lab.csv, pivoted_vital.csv and pivoted_sofa.csv
+
+1. Apply for MIMIC-III dataset access on PhysioNet.
+1. Make a Google Cloud Platform project for BigQuery.
+1. Checkout https://github.com/MIT-LCP/mimic-code.
+1. Read mimic-iii/Makefile.md and run `make mimic-download` and `make mimic-gz`. This creates a bunch of *.csv.gz files in `$datadir`.
+1. Upload the *.csv.gz to a Google Cloud Storage.
+1. Read mimic-iii/buildmimic/bigquery/README.md and follow STEP 6. 
+1. Read mimic-iii/concepts/README.md and run make-concept.sh. 
+  * You have to modify SQL files under mimic-iii/concepts so that the project name and dataset name are correct.
+  * Add demographics/icustay_times.sql and demographics/icustay_hours.sql after demographics/icustay_detail.sql and move demographics/heightweight.sql to after durations/weight_durations.sql.
+1. Export pivoted_lab, pivoted_vital and pivoted_sofa to Google Cloud Storage as CSV.
+
+## Preprocessing
+
+Put the CSVs under TAME/data/MIMIC/initial_mimiciii/ and follow the instruction on https://github.com/AIMedLab/TAME#mimic-iii-data-preprocessing.
+
+```
+cd code/preprocessing
+python preprocess_mimic_data.py --dataset MIMIC
+python generate_sepsis_variables.py --dataset MIMIC
+python generate_value_distribution.py --dataset MIMIC --split-num 1000
+```
+
+This creates a bunch of CSV and JSON files under `file` and `result` directories.
+
+## Training
+
+```
+python main.py --dataset DACMI --split-num 1000 --use-mm
+```
+
+# Results of TAME
 
 The imputation results on MIMIC-III dataset (all 27 variables).
 
 Results of the reproduction experiment 1 and 2 were added.
+
+* Experiment 1: `--split-num 4000`
+* Experiment 2: `--split-num 1000 --use-mm`
 
 ```
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

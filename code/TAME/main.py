@@ -3,8 +3,6 @@
 
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 import os
 import sys
@@ -44,12 +42,12 @@ if args.model != 'tame':
     args.use_ta = 0
 if args.use_ve == 0:
     args.value_embedding = 'no'
-print 'epochs,', args.epochs
+print('epochs,', args.epochs)
 
 def _cuda(tensor, is_tensor=True):
     if args.gpu:
         if is_tensor:
-            return tensor.cuda(async=True)
+            return tensor.cuda(non_blocking=True)
         else:
             return tensor.cuda()
     else:
@@ -185,7 +183,7 @@ def train_eval(data_loader, net, loss, epoch, optimizer, best_metric, phase='tra
     name_list = args.name_list
     assert len(metric_list) == len(name_list) * 2
     s = args.model
-    for i in range(len(metric_list)/2):
+    for i in range(len(metric_list)//2):
         name = name_list[i] + ''.join(['.' for _ in range(40 - len(name_list[i]))])
         print('{:s}{:3.4f}......{:3.4f}'.format(name, metric_list[2*i], metric_list[2*i+1]))
         s = s+ '  {:3.4f}'.format(metric_list[2*i])
@@ -246,7 +244,7 @@ def main():
             print('start epoch :', epoch)
             train_eval(train_loader, net, loss, epoch, optimizer, best_metric)
             best_metric = train_eval(valid_loader, net, loss, epoch, optimizer, best_metric, phase='valid')
-        print 'best metric', best_metric
+        print('best metric', best_metric)
 
     elif args.phase == 'test':
         folder = os.path.join(args.result_dir, args.dataset, 'imputation_result')

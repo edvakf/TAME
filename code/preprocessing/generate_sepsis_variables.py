@@ -162,6 +162,12 @@ def merge_pivoted_data(csv_list):
                     line_dict['hadm_id'] = hadm_id
                     line_dict['charttime'] = line_dict['starttime']
 
+                if fi == 'pivoted_vital.csv':
+                    icu_id = line_dict.get('icustay_id', 'xxx')
+                    if icu_id not in icu_hadm_dict:
+                        continue
+                    hadm_id = str(icu_hadm_dict[icu_id])
+                    line_dict['hadm_id'] = hadm_id
 
                 hadm_id = line_dict.get('hadm_id', 'xxx')
                 if hadm_id not in hadm_time_dict:
@@ -197,6 +203,7 @@ def merge_pivoted_data(csv_list):
                 wf.close()
 
             else:
+                line = line.lower()
                 if fi == 'pivoted_sofa.csv':
                     sofa_head = ','.join(['time'] + line.replace('"', '').split(',')[4:])
                 # "icustay_id","hr","starttime","endtime","pao2fio2ratio_novent","pao2fio2ratio_vent","rate_epinephrine","rate_norepinephrine","rate_dopamine","rate_dobutamine","meanbp_min","gcs_min","urineoutput","bilirubin_max","creatinine_max","platelet_min","respiration","coagulation","liver","cardiovascular","cns","renal","respiration_24hours","coagulation_24hours","liver_24hours","cardiovascular_24hours","cns_24hours","renal_24hours","sofa_24hours"
